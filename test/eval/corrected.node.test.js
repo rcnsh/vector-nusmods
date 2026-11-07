@@ -72,7 +72,7 @@ describe('the corrected texts a ranker embeds', () => {
   it('a 3C-2 run is refused when one lacks an embedding, naming the command to run', () => {
     const have = new Set([embeddingKey(MODEL, 'machine learning')]);
     expect(() => assertCorrectedEmbedded({ set: 'dev', setDirArg: '', ref: '3c2', queries, corrector: corrector(true), have }))
-      .toThrow('1 corrected query text(s) of the dev set have no embedding (the ranker embeds each query\'s corrected text, 3C-2); run `npm run eval:embed -- --set dev --corrected-from-ref 3c2` locally');
+      .toThrow('1 dense query text(s) of the dev set have no embedding (the ranker embeds each query\'s corrected text, 3C-2, or its 3H-stripped text); run `npm run eval:embed -- --set dev --corrected-from-ref 3c2` locally');
     expect(() => assertCorrectedEmbedded({ set: 'dev', setDirArg: ' --set-dir eval/diag/typo', ref: 'WORKTREE', queries, corrector: corrector(true), have }))
       .toThrow('`npm run eval:embed -- --set dev --set-dir eval/diag/typo --corrected-from-ref WORKTREE`');
   });
@@ -83,7 +83,7 @@ describe('the corrected texts a ranker embeds', () => {
       expect.unreachable();
     } catch (err) {
       expect(String(err)).not.toMatch(/mach/);
-      expect(String(err)).toMatch(/^Error: 2 corrected/);
+      expect(String(err)).toMatch(/^Error: 2 dense/);
     }
   });
 

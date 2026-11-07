@@ -1,0 +1,142 @@
+{
+  "schema": "vnm-3h-exempt/1",
+  "rule": "C3-8",
+  "set": "dev",
+  "ref": "3h-i-stripped",
+  "sha": "82443e15a32a65ee4bf9464afd8ff136677b4b34",
+  "semantics": "i",
+  "dense": "stripped",
+  "qrels": "qrels-dev-v10",
+  "ids": [
+    "d-011",
+    "d-099"
+  ],
+  "intent": [
+    {
+      "id": "d-011",
+      "constraints": {
+        "prereq": "none"
+      },
+      "relevant": 5,
+      "failing": {
+        "ACC1701XA": "prereq",
+        "ACC1701XC": "prereq",
+        "ACC2706": "prereq",
+        "FIN2704X": "prereq",
+        "QF1100": "prereq"
+      }
+    },
+    {
+      "id": "d-023",
+      "constraints": {
+        "prereq": "none"
+      },
+      "relevant": 31,
+      "failing": {
+        "NST2006": "prereq",
+        "QF1100": "prereq",
+        "ZB2101": "prereq",
+        "MA1100": "prereq",
+        "TS1101E": "prereq"
+      }
+    },
+    {
+      "id": "d-024",
+      "constraints": {
+        "exam": 0
+      },
+      "relevant": 9,
+      "failing": {
+        "CS2113": "exam",
+        "CS3213": "exam",
+        "CS3219": "exam",
+        "CS4218": "exam",
+        "IS4403": "exam",
+        "CS4215": "exam"
+      }
+    },
+    {
+      "id": "d-037",
+      "constraints": {
+        "exam": 0
+      },
+      "relevant": 8,
+      "failing": {
+        "CG3207": "exam",
+        "EE2028": "exam"
+      }
+    },
+    {
+      "id": "d-048",
+      "constraints": {
+        "prereq": "none"
+      },
+      "relevant": 28,
+      "failing": {
+        "AH3204": "prereq",
+        "TS1101E": "prereq",
+        "EN3880A": "prereq"
+      }
+    },
+    {
+      "id": "d-049",
+      "constraints": {
+        "exam": 0
+      },
+      "relevant": 9,
+      "failing": {}
+    },
+    {
+      "id": "d-050",
+      "constraints": {
+        "exam": 0
+      },
+      "relevant": 17,
+      "failing": {
+        "PS1101E": "exam",
+        "PS2234": "exam",
+        "PS2248": "exam",
+        "PS2249": "exam",
+        "PS3236": "exam",
+        "PS3238": "exam",
+        "GEC1007": "exam"
+      }
+    },
+    {
+      "id": "d-080",
+      "constraints": {
+        "prereq": "none"
+      },
+      "relevant": 11,
+      "failing": {
+        "MA1100": "prereq"
+      }
+    },
+    {
+      "id": "d-081",
+      "constraints": {
+        "exam": 0
+      },
+      "relevant": 5,
+      "failing": {
+        "CS2113": "exam"
+      }
+    },
+    {
+      "id": "d-099",
+      "constraints": {
+        "prereq": "none"
+      },
+      "relevant": 7,
+      "failing": {
+        "QF1100": "prereq",
+        "ACC1701XA": "prereq",
+        "ACC1701XC": "prereq",
+        "ACC2706": "prereq",
+        "FIN3701A": "prereq",
+        "FIN3702A": "prereq",
+        "FIN3702B": "prereq"
+      }
+    }
+  ]
+}

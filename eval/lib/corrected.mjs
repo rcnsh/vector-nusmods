@@ -54,20 +54,12 @@ export async function rankerCorrector(root, modules, label) {
   const vocab = parseVocabulary(file);
   /** @type {RankerCorrector['dense']} */
   let dense = null;
-  if (existsSync(join(root, 'src/intents.js'))) {
-    const { buildIntentContext, parseQuery } = await import(url('query-intent.js'));
-    const { compileConstraintPhrases } = await import(url('intents.js'));
-    const { STOPWORDS_IN_FORCE } = await import(url('fts-query.js'));
-    const data = (/** @type {string} */ f) => JSON.parse(readFileSync(join(root, 'data', f), 'utf8'));
-    const ctx = buildIntentContext({
-      prefixes: Object.keys(data('prefixes.json').prefixes), catalogueCodes: data('catalogue-codes.json').codes,
-      collision: data('collision-list.json').list, ge: data('ge-pillars.json'), stopwords: STOPWORDS_IN_FORCE,
-      isOffered: () => false, vocabulary: vocab, constraintPhrases: compileConstraintPhrases(data('constraint-phrases.json')),
-    });
+  const parse = await rankerIntentParser(root, vocab);
+  if (parse) {
     // As src/search.js denseTexts: the dense query, and under 3C-2 the corrected one.
     dense = (text) => {
       const q = canonicalQuery(text.trim());
-      const p = parseQuery(q, ctx);
+      const p = parse(q);
       return [p.dense, ...(EMBED_CORRECTED === true && p.corrected !== null ? [p.corrected] : [])].filter((t) => t !== q);
     };
   }
@@ -83,6 +75,30 @@ export async function rankerCorrector(root, modules, label) {
       return c.text === q ? null : c.text;
     },
   };
+}
+
+/**
+ * The 3H parse of the ranker at `root` (parseQuery over its own data files and
+ * the given vocabulary), or null for a ranker without src/intents.js. Takes a
+ * canonical query. Nothing is offered, so no code pins: callers read only the
+ * dense text, the corrected text and the 3H constraints.
+ * @param {string} root
+ * @param {unknown} vocab the ranker's parsed vocabulary
+ * @returns {Promise<((q: string) => { dense: string, corrected: string | null, constraints: Record<string, unknown> }) | null>}
+ */
+export async function rankerIntentParser(root, vocab) {
+  if (!existsSync(join(root, 'src/intents.js'))) return null;
+  const url = (/** @type {string} */ f) => pathToFileURL(join(root, 'src', f)).href;
+  const { buildIntentContext, parseQuery } = await import(url('query-intent.js'));
+  const { compileConstraintPhrases } = await import(url('intents.js'));
+  const { STOPWORDS_IN_FORCE } = await import(url('fts-query.js'));
+  const data = (/** @type {string} */ f) => JSON.parse(readFileSync(join(root, 'data', f), 'utf8'));
+  const ctx = buildIntentContext({
+    prefixes: Object.keys(data('prefixes.json').prefixes), catalogueCodes: data('catalogue-codes.json').codes,
+    collision: data('collision-list.json').list, ge: data('ge-pillars.json'), stopwords: STOPWORDS_IN_FORCE,
+    isOffered: () => false, vocabulary: vocab, constraintPhrases: compileConstraintPhrases(data('constraint-phrases.json')),
+  });
+  return (q) => parseQuery(q, ctx);
 }
 
 /**

@@ -6,7 +6,7 @@
  "seed": "vnm-3c-diag-typo-2026-11-07",
  "derivedFrom": {
   "queries": "v2.1",
-  "qrels": "qrels-dev-v9"
+  "qrels": "qrels-dev-v10"
  },
  "noiseModel": "eval/diag/build-typo.mjs (Phase 2b's, eval/v2/build-queries.mjs): 1–2 letter-only words of 4+ letters, each one interior keyboard-neighbour substitution, transposition, deletion or doubling",
  "queries": [

@@ -1,7 +1,7 @@
 {
  "schema": "vnm-eval-qrels/1",
  "set": "dev",
- "version": "qrels-dev-v9",
+ "version": "qrels-dev-v10",
  "corpus": {
   "moduleInfoSha256": "2d138795d387d133237669a7f5a22c7c4d30b4a26bf82dad0a982636e80857b1",
   "ngSha256": "092d021db4ccff2ea45e75bfc073623fa502aace082a8d5bd627f41d79c3f169"
@@ -246,6 +246,34 @@
     }
    },
    "createdAt": "2026-11-07T14:56:57.932Z"
+  },
+  {
+   "round": "p3h",
+   "mode": "single",
+   "judges": {
+    "A": "claude-opus-5-5"
+   },
+   "adjudicator": null,
+   "pairs": 48,
+   "pool": "76ef92399839e228f846ab62c01762483c332fd9e20dee93008d76cc47c84162",
+   "codeRule": {
+    "rule": "code-rule-v1",
+    "pairs": 56,
+    "queries": 0,
+    "added": {
+     "0": 0,
+     "1": 0,
+     "2": 0
+    },
+    "changed": {},
+    "overrides": {
+     "total": 0,
+     "up": 0,
+     "down": 0,
+     "same": 0
+    }
+   },
+   "createdAt": "2026-11-07T17:06:41.801Z"
   }
  ],
  "queries": {
@@ -3056,6 +3084,102 @@
        "slot": "A",
        "grade": 0,
        "rationale": "Introductory bioinformatics; unrelated to accounting or finance."
+      }
+     }
+    },
+    "CS1010": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "CS1010 is an introductory programming course, unrelated to accounting or finance."
+      }
+     }
+    },
+    "DAO1704X": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "DAO1704X is an intro business analytics course using spreadsheets and AI, not an accounting or finance course."
+      }
+     }
+    },
+    "EC1101E": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "EC1101E is an introductory economics course, neither accounting nor finance as the intent requires."
+      }
+     }
+    },
+    "GE3206": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "GE3206 is a geography course on gender and space, unrelated to accounting."
+      }
+     }
+    },
+    "LL4527V": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "LL4527V is a 4000-level law course on business valuation practice, not an introductory accounting or finance course."
+      }
+     }
+    },
+    "SC2209": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "SC2209 is a sociology/anthropology course on the cultural meanings of money and finance, not an accounting or intro finance course."
+      }
+     }
+    },
+    "SC3210": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "SC3210 is a sociology course on AI and society, unrelated to accounting."
+      }
+     }
+    },
+    "SC3211": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "SC3211 is a science and technology studies sociology course, unrelated to accounting."
       }
      }
     }
@@ -6870,6 +6994,78 @@
        "rationale": "1000-level foundational introduction to theatre and performance, open to NG students in semester 2; nothing in the description suggests prerequisites."
       }
      }
+    },
+    "GEC1007": {
+     "grade": 2,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 2,
+       "rationale": "GEC1007 is a 1000-level cross-faculty course introducing geopolitics to a broad range of students, offered and NG-open in semester 2."
+      }
+     }
+    },
+    "GEC1038": {
+     "grade": 2,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 2,
+       "rationale": "GEC1038 is a 1000-level general education course on early Asian cinema with no background implied, offered and NG-open in semester 2."
+      }
+     }
+    },
+    "LAF1201": {
+     "grade": 2,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 2,
+       "rationale": "LAF1201 French 1 is a 1000-level beginners language course on basic structures, open to NG students in semester 2."
+      }
+     }
+    },
+    "LAK1201": {
+     "grade": 2,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 2,
+       "rationale": "LAK1201 Korean 1 is a 1000-level beginners course, open to NG students in semester 2, fitting a no-prerequisite fun elective."
+      }
+     }
+    },
+    "MS5201": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "MS5201 is a 5000-level graduate course critiquing Malay Studies scholarship, an advanced course rather than an intro elective."
+      }
+     }
+    },
+    "MUA3219": {
+     "grade": 1,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 1,
+       "rationale": "MUA3219 World Music Ensemble is 3000-level but mostly open to any student regardless of musical background; some terms may require instrument proficiency, so partially relevant."
+      }
+     }
     }
    }
   },
@@ -7256,6 +7452,114 @@
        "slot": "A",
        "grade": 0,
        "rationale": "Algorithmic bioinformatics course with no indication of project-based assessment; the fields give no exam information."
+      }
+     }
+    },
+    "CDE2301": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "A business-viability innovation course with a group project, but not a CS course."
+      }
+     }
+    },
+    "CS4211": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "A theory-oriented CS course on formal specification and verification; nothing in the description suggests project-based assessment."
+      }
+     }
+    },
+    "CS4249": {
+     "grade": 2,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 2,
+       "rationale": "A semester 2 CS course built around a semester-long group project with milestones; the description suggests project-based assessment, though the exam format is not shown."
+      }
+     }
+    },
+    "ESP2107": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "An Engineering Science numerical methods course using MATLAB, not a CS project course."
+      }
+     }
+    },
+    "ID2114": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "A woodworking workshop course in Design, not CS."
+      }
+     }
+    },
+    "ID2115": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "A project-based digital painting course in Design, not a CS course."
+      }
+     }
+    },
+    "IT2002": {
+     "grade": 1,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 1,
+       "rationale": "A Computing database course where a database development project is an essential component, but the fields do not show whether there is also a final exam."
+      }
+     }
+    },
+    "LAD2007": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "A landscape architecture design studio, not a CS course."
+      }
+     }
+    },
+    "SPH3501": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "A public health communication course; project work is mentioned but it is not CS."
       }
      }
     }
@@ -10678,6 +10982,66 @@
        "rationale": "Civil engineering topic-coverage course; the description shows no project-based or exam-free assessment, so it does not meet the no-final-exam project intent on the evidence shown."
       }
      }
+    },
+    "BN4301": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "A principles-of-tissue-engineering lecture course. The description shows no project-based assessment, so nothing indicates it avoids a final exam."
+      }
+     }
+    },
+    "CE3155B": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "A 2-credit compulsory civil engineering structural analysis course with no sign of project-based, exam-free assessment."
+      }
+     }
+    },
+    "ESP3106": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "A theoretical continuum mechanics course. The description shows no project-based or exam-free assessment."
+      }
+     }
+    },
+    "ID3108": {
+     "grade": 1,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 1,
+       "rationale": "A project-based design studio in CDE's Design department, likely without a final exam, but it is industrial design rather than a mechanical or general engineering elective."
+      }
+     }
+    },
+    "LSM4242": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "A Biological Sciences course in the Faculty of Science, so not an engineering elective, and it shows no project-based assessment."
+      }
+     }
     }
    }
   },
@@ -13718,6 +14082,18 @@
        "rationale": "A History course on popular culture and historical knowledge, but 2000-level and topical with varying focus, so less clearly introductory."
       }
      }
+    },
+    "GEC1023": {
+     "grade": 2,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 2,
+       "rationale": "A 1000-level general education course on the social history of the piano, with no prerequisite mentioned; an introductory history course, though music-focused."
+      }
+     }
     }
    }
   },
@@ -14046,6 +14422,42 @@
        "rationale": "A 5000-level Malay Studies critiques course; not a history course and no assessment information shown."
       }
      }
+    },
+    "AH2101": {
+     "grade": 1,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 1,
+       "rationale": "An art history course in the History department, open to NG students. The fields give no assessment information, so the no-exam requirement cannot be confirmed."
+      }
+     }
+    },
+    "HY1101E": {
+     "grade": 1,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 1,
+       "rationale": "A 1000-level global history of Asia course open to NG students. The description does not show the assessment format, so the essay-only, no-exam requirement is unconfirmed."
+      }
+     }
+    },
+    "HY2251": {
+     "grade": 1,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 1,
+       "rationale": "A History department course with object-based learning and VR curation, which suggests project work, but the fields do not show whether there is a final exam."
+      }
+     }
     }
    }
   },
@@ -14276,6 +14688,30 @@
        "slot": "A",
        "grade": 1,
        "rationale": "A Sem 2 NG-open political philosophy course matching politics; the fields do not show whether it has a final exam, so it cannot be confirmed as exam-free."
+      }
+     }
+    },
+    "PE2101P": {
+     "grade": 1,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 1,
+       "rationale": "An interdisciplinary PPE intro in which political science is one part; the fields do not show assessment, so the no-exam preference cannot be confirmed."
+      }
+     }
+    },
+    "PS3216": {
+     "grade": 2,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 2,
+       "rationale": "A semester 2 Political Science course on global health governance and international relations; the fields do not show the exam format, so it is graded on topic."
       }
      }
     }
@@ -23122,6 +23558,30 @@
        "rationale": "Introduction to political science, not philosophy, logic or critical thinking."
       }
      }
+    },
+    "PH2209": {
+     "grade": 1,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 1,
+       "rationale": "Accessible 2000-level philosophy course built around intuitive puzzles about art, NG-open in semester 1, but it is a topic course rather than a general introduction and prerequisites are not shown."
+      }
+     }
+    },
+    "PH3208": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "3000-level specialised course on Mahayana Buddhist philosophical issues and theory of knowledge, closer to the advanced, tradition-specific course the intent rules out than to a beginner introduction."
+      }
+     }
     }
    }
   },
@@ -23616,6 +24076,66 @@
        "slot": "A",
        "grade": 0,
        "rationale": "A mathematics course, not CS, with no assessment information indicating no final exam."
+      }
+     }
+    },
+    "CS3235": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "A CS computer security course, but the fields show no assessment information. Nothing suggests 100% coursework or project assessment, which is the intent's core criterion."
+      }
+     }
+    },
+    "CS4223": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "A CS course on multi-core architecture, but the description says nothing about assessment. There is no evidence that it has no final exam or is project-based, which is what the intent requires."
+      }
+     }
+    },
+    "NM2207": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "A Communications and New Media course on web development and data visualisation for non-programmers, not a CS course. It mentions hands-on exercises but nothing showing there is no final exam."
+      }
+     }
+    },
+    "NST2068": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "An NUS College interdisciplinary course on agent-based modelling, not a CS department course. The description gives no assessment details showing there is no final exam."
+      }
+     }
+    },
+    "PC4236": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "A computational physics course from the Physics department, not computer science. Its description gives no assessment information."
       }
      }
     }
@@ -29606,6 +30126,90 @@
        "slot": "A",
        "grade": 1,
        "rationale": "Not accounting, but it calls itself an introductory investments course in finance, which fits the partially relevant intro-finance line; it is 3000-level and the fields do not show its prerequisites."
+      }
+     }
+    },
+    "BT1101": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "Intro business analytics with R; a business-adjacent data course, not financial or managerial accounting or intro finance."
+      }
+     }
+    },
+    "CS1010": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "Introductory programming course; unrelated to accounting."
+      }
+     }
+    },
+    "EC1101E": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "Introductory economics, not accounting or finance; the intent's partial category is intro finance only."
+      }
+     }
+    },
+    "GE3206": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "Feminist human geography course; unrelated to accounting."
+      }
+     }
+    },
+    "LL4527V": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "4000-level, 5-unit law course on business valuation practice and standards; advanced and not an introductory accounting course."
+      }
+     }
+    },
+    "SC3210": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "Sociology course on AI and society; unrelated to accounting."
+      }
+     }
+    },
+    "SC3211": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "Science and Technology Studies sociology course; not accounting or finance."
       }
      }
     }

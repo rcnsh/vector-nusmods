@@ -1,0 +1,141 @@
+{
+  "schema": "vnm-3h-select/1",
+  "set": "dev",
+  "qrels": "qrels-dev-v10",
+  "baseline": "shipped-f004351",
+  "rawMargin": 0.05,
+  "blockIds": [
+    "d-024",
+    "d-037",
+    "d-049",
+    "d-050",
+    "d-081"
+  ],
+  "points": {
+    "i-stripped": {
+      "prereq": "i",
+      "dense": "stripped",
+      "overallDelta": -0.017598212930727948,
+      "constraintBlockNdcg": 0.5559921702550807,
+      "prereqIds": [
+        "d-011",
+        "d-023",
+        "d-048",
+        "d-080",
+        "d-099"
+      ],
+      "prereqMeanDelta": -0.2991696198223751,
+      "intentDeltas": {
+        "d-011": -0.926,
+        "d-023": 0.085,
+        "d-024": 0,
+        "d-037": 0.283,
+        "d-048": 0.075,
+        "d-049": 0.168,
+        "d-050": 0.096,
+        "d-080": 0.105,
+        "d-081": -0.142,
+        "d-099": -0.835
+      },
+      "exempt": [
+        "d-011",
+        "d-099"
+      ],
+      "noIntentTop10Changed": []
+    },
+    "i-raw": {
+      "prereq": "i",
+      "dense": "raw",
+      "overallDelta": -0.018883148312696312,
+      "constraintBlockNdcg": 0.5736180912337749,
+      "prereqIds": [
+        "d-011",
+        "d-023",
+        "d-048",
+        "d-080",
+        "d-099"
+      ],
+      "prereqMeanDelta": -0.32101352131583727,
+      "intentDeltas": {
+        "d-011": -0.926,
+        "d-023": 0.061,
+        "d-024": 0.042,
+        "d-037": 0.136,
+        "d-048": 0.047,
+        "d-049": 0.138,
+        "d-050": 0.096,
+        "d-080": 0.048,
+        "d-081": 0.082,
+        "d-099": -0.835
+      },
+      "exempt": [
+        "d-011",
+        "d-099"
+      ],
+      "noIntentTop10Changed": []
+    },
+    "ii-stripped": {
+      "prereq": "ii",
+      "dense": "stripped",
+      "overallDelta": -0.0044051956889957404,
+      "constraintBlockNdcg": 0.5559921702550807,
+      "prereqIds": [
+        "d-011",
+        "d-023",
+        "d-048",
+        "d-080",
+        "d-099"
+      ],
+      "prereqMeanDelta": -0.07488832671292758,
+      "intentDeltas": {
+        "d-011": -0.411,
+        "d-023": 0.085,
+        "d-024": 0,
+        "d-037": 0.283,
+        "d-048": 0.075,
+        "d-049": 0.168,
+        "d-050": 0.096,
+        "d-080": 0.105,
+        "d-081": -0.142,
+        "d-099": -0.229
+      },
+      "exempt": [],
+      "noIntentTop10Changed": []
+    },
+    "ii-raw": {
+      "prereq": "ii",
+      "dense": "raw",
+      "overallDelta": -0.0056901310709641046,
+      "constraintBlockNdcg": 0.5736180912337749,
+      "prereqIds": [
+        "d-011",
+        "d-023",
+        "d-048",
+        "d-080",
+        "d-099"
+      ],
+      "prereqMeanDelta": -0.09673222820638978,
+      "intentDeltas": {
+        "d-011": -0.411,
+        "d-023": 0.061,
+        "d-024": 0.042,
+        "d-037": 0.136,
+        "d-048": 0.047,
+        "d-049": 0.138,
+        "d-050": 0.096,
+        "d-080": 0.048,
+        "d-081": 0.082,
+        "d-099": -0.229
+      },
+      "exempt": [],
+      "noIntentTop10Changed": []
+    }
+  },
+  "denseChoice": {
+    "i": "stripped",
+    "ii": "stripped"
+  },
+  "semantics": "ii",
+  "selected": "ii-stripped",
+  "fallback": "i-stripped"
+}

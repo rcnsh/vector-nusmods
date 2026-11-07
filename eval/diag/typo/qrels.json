@@ -2,7 +2,7 @@
  "schema": "vnm-eval-qrels/1",
  "set": "dev",
  "version": "qrels-diag-typo-v1",
- "derivedFrom": "qrels-dev-v9",
+ "derivedFrom": "qrels-dev-v10",
  "rule": "each variant has its source dev query's judgments, verbatim",
  "corpus": {
   "moduleInfoSha256": "2d138795d387d133237669a7f5a22c7c4d30b4a26bf82dad0a982636e80857b1",
@@ -1508,6 +1508,102 @@
        "rationale": "Introductory bioinformatics; unrelated to accounting or finance."
       }
      }
+    },
+    "CS1010": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "CS1010 is an introductory programming course, unrelated to accounting or finance."
+      }
+     }
+    },
+    "DAO1704X": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "DAO1704X is an intro business analytics course using spreadsheets and AI, not an accounting or finance course."
+      }
+     }
+    },
+    "EC1101E": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "EC1101E is an introductory economics course, neither accounting nor finance as the intent requires."
+      }
+     }
+    },
+    "GE3206": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "GE3206 is a geography course on gender and space, unrelated to accounting."
+      }
+     }
+    },
+    "LL4527V": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "LL4527V is a 4000-level law course on business valuation practice, not an introductory accounting or finance course."
+      }
+     }
+    },
+    "SC2209": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "SC2209 is a sociology/anthropology course on the cultural meanings of money and finance, not an accounting or intro finance course."
+      }
+     }
+    },
+    "SC3210": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "SC3210 is a sociology course on AI and society, unrelated to accounting."
+      }
+     }
+    },
+    "SC3211": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "SC3211 is a science and technology studies sociology course, unrelated to accounting."
+      }
+     }
     }
    }
   },
@@ -2830,6 +2926,78 @@
        "slot": "A",
        "grade": 2,
        "rationale": "1000-level foundational introduction to theatre and performance, open to NG students in semester 2; nothing in the description suggests prerequisites."
+      }
+     }
+    },
+    "GEC1007": {
+     "grade": 2,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 2,
+       "rationale": "GEC1007 is a 1000-level cross-faculty course introducing geopolitics to a broad range of students, offered and NG-open in semester 2."
+      }
+     }
+    },
+    "GEC1038": {
+     "grade": 2,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 2,
+       "rationale": "GEC1038 is a 1000-level general education course on early Asian cinema with no background implied, offered and NG-open in semester 2."
+      }
+     }
+    },
+    "LAF1201": {
+     "grade": 2,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 2,
+       "rationale": "LAF1201 French 1 is a 1000-level beginners language course on basic structures, open to NG students in semester 2."
+      }
+     }
+    },
+    "LAK1201": {
+     "grade": 2,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 2,
+       "rationale": "LAK1201 Korean 1 is a 1000-level beginners course, open to NG students in semester 2, fitting a no-prerequisite fun elective."
+      }
+     }
+    },
+    "MS5201": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "MS5201 is a 5000-level graduate course critiquing Malay Studies scholarship, an advanced course rather than an intro elective."
+      }
+     }
+    },
+    "MUA3219": {
+     "grade": 1,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 1,
+       "rationale": "MUA3219 World Music Ensemble is 3000-level but mostly open to any student regardless of musical background; some terms may require instrument proficiency, so partially relevant."
       }
      }
     }
@@ -6856,6 +7024,18 @@
        "rationale": "A History course on popular culture and historical knowledge, but 2000-level and topical with varying focus, so less clearly introductory."
       }
      }
+    },
+    "GEC1023": {
+     "grade": 2,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 2,
+       "rationale": "A 1000-level general education course on the social history of the piano, with no prerequisite mentioned; an introductory history course, though music-focused."
+      }
+     }
     }
    }
   },
@@ -10654,6 +10834,30 @@
        "slot": "A",
        "grade": 0,
        "rationale": "Introduction to political science, not philosophy, logic or critical thinking."
+      }
+     }
+    },
+    "PH2209": {
+     "grade": 1,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 1,
+       "rationale": "Accessible 2000-level philosophy course built around intuitive puzzles about art, NG-open in semester 1, but it is a topic course rather than a general introduction and prerequisites are not shown."
+      }
+     }
+    },
+    "PH3208": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3h",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "3000-level specialised course on Mahayana Buddhist philosophical issues and theory of knowledge, closer to the advanced, tradition-specific course the intent rules out than to a beginner introduction."
       }
      }
     }

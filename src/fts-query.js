@@ -29,7 +29,7 @@ export const STOPWORD_VARIANTS = Object.freeze({ current: STOPWORDS_CURRENT, v2:
  * eval scored. The 3B code-join guard reads the same list (src/query-intent.js).
  * @type {StopwordVariant}
  */
-export const STOPWORDS_VARIANT = 'current';
+export const STOPWORDS_VARIANT = 'v2';
 
 export const STOPWORDS_IN_FORCE = STOPWORD_VARIANTS[STOPWORDS_VARIANT];
 

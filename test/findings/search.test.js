@@ -41,9 +41,8 @@ describe('S4', () => {
     expect(codes(body.results)).toEqual(members);
   });
 
-  it('[S4 known-bug] "modules", "intro", "teach" and "something" are not stopwords', async () => {
-    expect(await matchExpression('intro to modules that teach something')).toBe(
-      '"intro" OR "modules" OR "that" OR "teach" OR "something"');
+  it('[S4 fixed] stopwords-v2 drops "modules", "teach" and "something"; "intro" stays (it goes to 3D)', async () => {
+    expect(await matchExpression('intro to modules that teach something')).toBe('"intro" OR "that"');
   });
 
   it.each(['machne', 'progr'])('[S4 known-bug] no fuzzy or prefix matching: "%s" gets 0 lexical hits', async (q) => {

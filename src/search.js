@@ -11,6 +11,7 @@ import dataVersion from './data-version.json';
 import { bundleSearch, denseBundle } from './dense.js';
 import { DEFAULT_MODEL } from './embedding.js';
 import { appVersion, bad, json, upstream, withHeaders } from './http.js';
+import { FUSION, fuse } from './fusion.js';
 import { intentContext } from './intent-data.js';
 import { lexicalSearch, rangeMembers } from './lexical.js';
 import { RESULT_COLUMNS, d1Timed, readSession, rowToModule } from './modules.js';
@@ -86,10 +87,6 @@ export function denseBackend(env) {
   return /** @type {string | undefined} */ (env.DENSE_BACKEND) === 'vectorize' ? 'vectorize' : 'bundle';
 }
 
-// Reciprocal-rank fusion constant. 60 is the value from the original Cormack et
-// al. RRF paper and the usual default; it damps the top of each list so neither
-// retriever can dominate on rank alone.
-const RRF_K = 60;
 // Each retriever contributes a deeper list than we return, so a document ranked
 // mid-list by one engine and top by the other can still surface.
 const CANDIDATE_MULTIPLIER = 3;
@@ -270,32 +267,6 @@ function intersectRanges(a, b) {
     }
   }
   return out;
-}
-
-// Reciprocal-rank fusion: each list contributes 1/(k + rank) to a document's
-// score. Rank-based, so the vector engine's cosine scores and FTS5's bm25
-// values never have to be made commensurable.
-/** @param {string[][]} lists */
-function fuse(lists) {
-  /** @type {Map<string, number>} */
-  const scores = new Map();
-  for (const list of lists) {
-    list.forEach((code, i) => {
-      scores.set(code, (scores.get(code) ?? 0) + 1 / (RRF_K + i + 1));
-    });
-  }
-  // RRF produces exact ties constantly (any two documents at the same rank in
-  // exactly one list each). Breaking them alphabetically systematically favours
-  // early-alphabet codes, which correlates with whatever a fixture happens to
-  // contain. A stable hash of the id is arbitrary but unbiased.
-  const tiebreak = (/** @type {string} */ code) => {
-    let h = 0;
-    for (let i = 0; i < code.length; i++) h = (Math.imul(h, 31) + code.charCodeAt(i)) | 0;
-    return h;
-  };
-  return [...scores.entries()]
-    .sort((a, b) => b[1] - a[1] || tiebreak(a[0]) - tiebreak(b[0]) || a[0].localeCompare(b[0]))
-    .map(([code, score]) => ({ code, score }));
 }
 
 /**
@@ -728,13 +699,17 @@ async function runSearch({ q, echo, filter, mode, topK, ignore }, env, trace, lo
   }
   const vectorCodes = denseHits.map((h) => h.code);
 
-  /** @type {string[][]} */
-  const lists = mode === 'vector' ? [vectorCodes]
-    : mode === 'lexical' || degraded ? [lexicalCodes]
-      : [vectorCodes, lexicalCodes];
-  if (codeCodes) lists.push(codeCodes);
+  /** @type {import('./fusion.js').RankedList} */
+  const vectorList = { kind: 'vector', codes: vectorCodes };
+  /** @type {import('./fusion.js').RankedList} */
+  const lexicalList = { kind: 'lexical', codes: lexicalCodes };
+  /** @type {import('./fusion.js').RankedList[]} */
+  const lists = mode === 'vector' ? [vectorList]
+    : mode === 'lexical' || degraded ? [lexicalList]
+      : [vectorList, lexicalList];
+  if (codeCodes) lists.push({ kind: 'code', codes: codeCodes });
   const pinnedCodes = new Set(pinned.map((p) => p.code));
-  const fused = fuse(lists).filter((f) => !pinnedCodes.has(f.code));
+  const fused = fuse(lists, FUSION).filter((f) => !pinnedCodes.has(f.code));
 
   // Hydrate only as many fused candidates as the response shows (B8). A
   // candidate missing from D1 means a stale index: drop it and hydrate the

@@ -79,6 +79,36 @@ describe('fuse', () => {
     expect(t).toEqual(['V1', 'L1', 'P1000', 'Q1000']);
   });
 
+  it('review fix: scores equal in exact arithmetic tie even when float rounding splits them', () => {
+    /** @param {string} tag @param {number} n @param {Record<number, string>} place */
+    const list = (tag, n, place) => Array.from({ length: n }, (_, i) => place[i + 1] ?? `${tag}F${i + 1}`);
+    /** @type {[keyof typeof FUSION_VARIANTS, import('../src/fusion.js').RankedList[], string[]][]} */
+    const cases = [
+      ['v100k60', [{ kind: 'vector', codes: list('V', 8, { 1: 'P1000', 7: 'Q1000' }) }, { kind: 'lexical', codes: list('L', 8, { 2: 'Q1000', 7: 'P1000' }) },
+        { kind: 'code', codes: list('C', 8, { 1: 'Q1000', 2: 'P1000' }) }], ['P1000', 'Q1000']],
+      ['v125k20', [{ kind: 'vector', codes: list('V', 22, { 1: 'P1000', 4: 'Q1000' }) }, { kind: 'lexical', codes: list('L', 22, { 22: 'P1000', 12: 'Q1000' }) }], ['P1000', 'Q1000']],
+      ['v150k60', [{ kind: 'vector', codes: list('V', 30, { 10: 'P1000', 30: 'Q1000' }) }, { kind: 'lexical', codes: list('L', 30, { 30: 'P1000', 3: 'Q1000' }) }], ['Q1000', 'P1000']],
+      ['v200k60', [{ kind: 'vector', codes: list('V', 57, { 3: 'P1000', 5: 'Q1000' }) }, { kind: 'lexical', codes: list('L', 57, { 57: 'P1000', 45: 'Q1000' }) }], ['P1000', 'Q1000']],
+    ];
+    for (const [v, lists, want] of cases) {
+      expect(fuse(lists, FUSION_VARIANTS[v]).map((f) => f.code).filter((c) => want.includes(c)), v).toEqual(want);
+    }
+  });
+
+  it('review fix: distinct scores 1.6e-11 apart keep their exact order, whatever the tiebreak says', () => {
+    // Found by exact search over ranks ≤ 60 at w_v 2, k 60: P (v49, l13, c37) scores 1.58e-11 below
+    // Q (v24, l40, c57) though P has the better single-list rank. A rounded comparison would tie them
+    // and put P first.
+    /** @param {string} tag @param {Record<number, string>} place */
+    const list = (tag, place) => Array.from({ length: 60 }, (_, i) => place[i + 1] ?? `${tag}F${i + 1}`);
+    const out = fuse([
+      { kind: 'vector', codes: list('V', { 49: 'P1000', 24: 'Q1000' }) },
+      { kind: 'lexical', codes: list('L', { 13: 'P1000', 40: 'Q1000' }) },
+      { kind: 'code', codes: list('C', { 37: 'P1000', 57: 'Q1000' }) },
+    ], FUSION_VARIANTS.v200k60).map((f) => f.code).filter((c) => c === 'P1000' || c === 'Q1000');
+    expect(out).toEqual(['Q1000', 'P1000']);
+  });
+
   it('a single list keeps its order under every variant', () => {
     const l = randomList(7, 20);
     for (const cfg of Object.values(FUSION_VARIANTS)) {

@@ -140,7 +140,9 @@ describe('the collapse', () => {
     const variants = log.filter((c) => c.sql.includes('WHERE code IN') && !c.sql.includes('title'));
     const hydrate = log.filter((c) => c.sql.includes('WHERE code IN') && c.sql.includes('title'));
     expect(variants).toHaveLength(1);
-    expect(variants[0].sql).toContain('SELECT code, credits, level, faculty, semesters, ng, ng_semesters FROM');
+    // A variant's code and credits, and the fields localMatchesFilters reads, 3H's included.
+    expect(variants[0].sql).toContain('SELECT code, credits, level, faculty, semesters, ng, ng_semesters, '
+      + 'exam_semesters, su, grading_basis, workload_hours, prereq_none, prereq_cohort_only FROM');
     const listed = body.results.flatMap((/** @type {any} */ r) => (r.variants ?? []).map((/** @type {any} */ v) => v.code));
     for (const c of listed) expect(/** @type {string[]} */ (variants[0].binds), c).toContain(c);
     const hydrated = hydrate.flatMap((c) => /** @type {string[]} */ (c.binds));

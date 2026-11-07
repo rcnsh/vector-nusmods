@@ -1,0 +1,39 @@
+{
+ "schema": "vnm-3h-constraint-phrases/1",
+ "from": "eval/prereg/intent-phrases.json `constraints` (P-6, unchanged)",
+ "exam": [
+  "no exam",
+  "no exams",
+  "no final",
+  "no finals",
+  "no final exam",
+  "no final exams",
+  "without exam",
+  "without exams",
+  "without final",
+  "without finals",
+  "without final exam",
+  "without final exams"
+ ],
+ "su": [
+  "s/u",
+  "su-able",
+  "s/u-able",
+  "pass/fail"
+ ],
+ "hoursBelow": [
+  "light workload",
+  "low workload",
+  "under N hours",
+  "less than N hours",
+  "< N hours"
+ ],
+ "light": 10,
+ "prereq": [
+  "no prereq",
+  "no prereqs",
+  "no prerequisite",
+  "no prerequisites",
+  "no background"
+ ]
+}

@@ -12,10 +12,12 @@
 // its workspace with one built from the run corpus (eval/lib/corrected.mjs).
 import catalogueCodes from '../data/catalogue-codes.json';
 import collision from '../data/collision-list.json';
+import constraintPhrases from '../data/constraint-phrases.json';
 import ge from '../data/ge-pillars.json';
 import prefixes from '../data/prefixes.json';
 import vocabularyFile from '../data/vocabulary.json';
 import { STOPWORDS_IN_FORCE } from './fts-query.js';
+import { compileConstraintPhrases } from './intents.js';
 import { buildIntentContext } from './query-intent.js';
 import { parseVocabulary } from './vocabulary.js';
 
@@ -35,6 +37,7 @@ export function intentContext(isOffered) {
     stopwords: STOPWORDS_IN_FORCE,
     isOffered: () => false,
     vocabulary: parseVocabulary(/** @type {import('./vocabulary.js').VocabularyFile} */ (vocabularyFile)),
+    constraintPhrases: compileConstraintPhrases(constraintPhrases),
   });
   return { ...base, isOffered };
 }

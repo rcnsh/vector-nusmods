@@ -394,8 +394,10 @@ describe('B8', () => {
     expect(body.retrieval.fused).toBeGreaterThan(20);
     expect(hydrate[0].binds).toEqual(codes(body.results));
     expect(hydrate[0].sql).toContain(`SELECT ${RESULT_COLUMNS} FROM`);
+    // Whole column names: 3H's filter columns (workload_hours, prereq_none, …) are small and read on purpose.
+    const cols = /** @type {RegExpMatchArray} */ (hydrate[0].sql.match(/^SELECT (.*) FROM/))[1].split(', ');
     for (const col of ['description', 'workload', 'prerequisite', 'preclusion', 'acad_year', 'text_hash']) {
-      expect(hydrate[0].sql).not.toContain(col);
+      expect(cols).not.toContain(col);
     }
   });
 

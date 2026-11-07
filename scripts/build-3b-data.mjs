@@ -12,6 +12,8 @@
 //   ge-pillars.json      the GE pillar table, from eval/prereg/ge-pillars.json;
 //   collision-list.json  the P-6 collision list and its exempt pillar prefixes, from
 //                        eval/prereg/collision-list.json (the Worker cannot read eval/);
+//   constraint-phrases.json  3H's P-6 phrase lists (no exam, S/U, workload, prerequisite),
+//                        from eval/prereg/intent-phrases.json `constraints`, for parse pass A;
 //   cohort-only-prereq.json  3H-0's P-6 cohort-only prerequisite rule, from
 //                        eval/prereg/cohort-only-prereq.json (normalise() reads it, and
 //                        the eval workspace has data/ but not eval/).
@@ -38,6 +40,7 @@ export const OUTPUTS = Object.freeze({
   gePillars: 'data/ge-pillars.json',
   collisionList: 'data/collision-list.json',
   cohortOnly: 'data/cohort-only-prereq.json',
+  constraintPhrases: 'data/constraint-phrases.json',
   counts: 'docs/evidence/phase3/3b-0-counts.json',
 });
 
@@ -73,6 +76,7 @@ export async function build() {
   const ge = await readJson('eval/prereg/ge-pillars.json');
   const collision = await readJson('eval/prereg/collision-list.json');
   const cohort = await readJson('eval/prereg/cohort-only-prereq.json');
+  const phrases = await readJson('eval/prereg/intent-phrases.json');
 
   // groups-v1, a singleton counting as its own group (A2-5).
   const groups = (await readJson('eval/groups.json')).groups;
@@ -169,6 +173,12 @@ export async function build() {
     cohortOnly: json({
       schema: 'vnm-3h-cohort-only/1', from: 'eval/prereg/cohort-only-prereq.json (P-6, unchanged)',
       normalise: cohort.normalise, remove: cohort.remove, remainder: cohort.remainder, remainderFlags: cohort.remainderFlags,
+    }),
+    constraintPhrases: json({
+      schema: 'vnm-3h-constraint-phrases/1', from: 'eval/prereg/intent-phrases.json `constraints` (P-6, unchanged)',
+      exam: phrases.constraints.exam.phrases, su: phrases.constraints.su.phrases,
+      hoursBelow: phrases.constraints.hoursBelow.phrases, light: phrases.constraints.hoursBelow.light,
+      prereq: phrases.constraints.prereq.phrases,
     }),
     counts: json(counts),
   };

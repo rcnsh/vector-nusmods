@@ -4,6 +4,7 @@
 // tokenising and the MATCH expression live in fts-query.js (no Worker types,
 // so Node tests can import it).
 import { ftsMatch } from './fts-query.js';
+import { INTENT } from './intents.js';
 
 export { ftsMatch, queryTokens } from './fts-query.js';
 
@@ -121,6 +122,16 @@ export function filterSql(echo, driver) {
   if (echo.faculty !== undefined) { clauses.push(`${col('faculty', 'faculty')} = ?`); binds.push(echo.faculty); }
   if (echo.ng === true) clauses.push(`${col('ng', 'ng')} = 1`);
   const plus = driver !== undefined ? '+' : '';
+  // 3H (plan 3H "Query side"): never an index driver.
+  if (echo.exam === 0) {
+    if (echo.sem !== undefined) clauses.push(`${plus}m.exam_sem${echo.sem} = 0`);
+    else clauses.push(`${plus}m.exam_semesters = '[]'`);
+  }
+  if (echo.su === 1) clauses.push(`(${plus}m.su = 1 OR ${plus}m.grading_basis = 'Completed Satisfactory/Unsatisfactory')`);
+  if (echo.hoursBelow !== undefined) { clauses.push(`${plus}m.workload_hours < ?`); binds.push(echo.hoursBelow); }
+  if (echo.prereq === 'none') {
+    clauses.push(INTENT.prereq === 'i' ? `${plus}m.prereq_none = 1` : `(${plus}m.prereq_none = 1 OR ${plus}m.prereq_cohort_only = 1)`);
+  }
   if (echo.levelWindow) {
     clauses.push(`${plus}m.level >= ?`);
     binds.push(echo.levelWindow.min);

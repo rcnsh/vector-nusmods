@@ -89,11 +89,16 @@ describe('S7', () => {
     ]);
   });
 
-  it('[S7 known-bug] /search accepts no workload, exam, S/U or prerequisite filter: they are ignored', async () => {
-    const plain = await callJson('/search?q=programming&mode=lexical', { fakes });
-    const filtered = await callJson('/search?q=programming&mode=lexical&exam=none&su=1&workload=low&noPrereq=1', { fakes });
-    expect(filtered.body.filters).toEqual({});
-    expect(codes(filtered.body.results)).toEqual(codes(plain.body.results));
+  it('[S7 fixed] 3H: /search filters on no exam, S/U, workload and prerequisite, as params or phrases', async () => {
+    const plain = await callJson('/search?q=introduction&mode=lexical&topK=50', { fakes });
+    const filtered = await callJson('/search?q=introduction&mode=lexical&topK=50&exam=0&su=1&hoursBelow=10&prereq=none', { fakes });
+    expect(filtered.body.filters).toEqual({ exam: 0, su: 1, hoursBelow: 10, prereq: 'none' });
+    expect(filtered.body.count).toBeLessThan(plain.body.count);
+    // `light workload`, not `under N hours`: the fixture's vocabulary has no `hours`, so 3C would
+    // correct it before pass A (test/full/vocabulary.node.test.js: no phrase is corrected on the real corpora).
+    const phrased = await callJson('/search?q=introduction%20s%2Fu%20no%20exam%20light%20workload%20no%20prereq&mode=lexical&topK=50', { fakes });
+    expect(phrased.body.interpreted).toMatchObject({ exam: 0, su: { value: 1 }, hoursBelow: 10, prereq: { value: 'none' } });
+    expect(new Set(codes(phrased.body.results))).toEqual(new Set(codes(filtered.body.results)));
   });
 });
 

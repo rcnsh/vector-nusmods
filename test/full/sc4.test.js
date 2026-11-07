@@ -29,8 +29,10 @@ import sc4Embeddings from '../sc4/embeddings.json';
 import devEmbeddings from '../../eval/dev/embeddings.json';
 import correctedEmbeddings from '../fixtures/sc4-corrected-embeddings.json';
 import { intentContext } from '../../src/intent-data.js';
-import { canonicalQuery } from '../../src/query-intent.js';
-import { EMBED_CORRECTED, correctQuery } from '../../src/typo.js';
+import { INTENT } from '../../src/intents.js';
+import { canonicalQuery, parseQuery } from '../../src/query-intent.js';
+import { denseTexts } from '../../src/search.js';
+import { EMBED_CORRECTED } from '../../src/typo.js';
 import { createFakes } from '../fakes.js';
 import { adminCall, callJson, seed } from '../helpers.js';
 
@@ -38,9 +40,9 @@ const corpus = inject('corpus');
 const bundleKind = inject('vectorsBundle');
 
 /** The workstreams merged into this ranker. 3D, 3F, 3G and 3H add themselves here as they merge. */
-const MERGED = new Set(['3B', '3C', '3F', '3G']);
-/** 3H's selected prereq semantics, substituted for `$selected` (prereg C9); null until 3H selects one. */
-const SELECTED_PREREQ = null;
+const MERGED = new Set(['3B', '3C', '3F', '3G', '3H']);
+/** 3H's prereq semantics, substituted for `$selected` (prereg C9): the variant in force's (src/intents.js). */
+const SELECTED_PREREQ = INTENT.prereq;
 /** Rows whose items are never skipped once their machinery exists (plan 737–739). */
 const NEVER_SKIPPED = new Set(['typo', 'gibberish', 'nonexistent-code', 'guard']);
 
@@ -98,20 +100,21 @@ const ENTRIES = { ...devEmbeddings.entries, ...sc4Embeddings.entries, .../** @ty
 for (const cache of [sc4Embeddings, devEmbeddings, correctedEmbeddings]) if (cache.model !== '@cf/baai/bge-small-en-v1.5' || cache.dims !== 384) throw new Error('unexpected embedding cache');
 
 /**
- * Under 3C-2, the corrected forms of the texts an item sends (its text, a
- * typo item's clean form, a constraint reference) that have no committed
- * embedding: the dense half embeds each beside the query. Under 3C-1, none.
+ * The texts the dense half embeds for what an item sends (its text, a typo
+ * item's clean form, a constraint reference) beyond the canonical query, as
+ * the Worker's own parse gives them (denseTexts): 3C-2's corrected form and
+ * 3H's stripped form. Those with no committed embedding await the lead's.
  * @param {Item} item
  */
 async function missingCorrected(item) {
-  if (!EMBED_CORRECTED) return [];
-  const vocab = /** @type {import('../../src/vocabulary.js').Vocabulary} */ (intentContext(() => false).vocabulary);
+  const ctx = intentContext(() => false);
   /** @type {string[]} */
   const out = [];
   for (const text of [item.text, item.params.clean, item.params.reference].filter((t) => typeof t === 'string')) {
     const q = canonicalQuery(text.trim());
-    const c = correctQuery(q, vocab).text;
-    if (c !== q && !ENTRIES[await sha256Hex(`${sc4Embeddings.model}\n${c}`)]) out.push(c);
+    for (const t of denseTexts(parseQuery(q, ctx))) {
+      if (t !== q && !ENTRIES[await sha256Hex(`${sc4Embeddings.model}\n${t}`)]) out.push(t);
+    }
   }
   return out;
 }
@@ -153,6 +156,22 @@ describe.skipIf(!corpus || bundleKind !== 'pinned')('the SC4 suite over the pinn
   const moduleOf = new Map(c.modules.map((m) => [m.code, m]));
   /** @param {string} p */
   const members = (p) => offered.filter((code) => inRange(code, p));
+  /** Results and their 3F variants. @param {any} body @returns {string[]} */
+  const shownOf = (body) => body.results.flatMap((/** @type {any} */ r) => [r.code, ...(r.variants ?? []).map((/** @type {any} */ v) => v.code)]);
+  /**
+   * Whether a module meets a 3H param (prereg §4 `constraint`), under the selected prereq semantics.
+   * @param {string} code @param {Record<string, string>} param
+   */
+  const satisfies = (code, param) => {
+    const m = /** @type {NormalisedModule} */ (moduleOf.get(code));
+    return Object.entries(param).every(([k, v]) => {
+      if (k === 'exam') return m.examSemesters.length === 0;
+      if (k === 'su') return m.su || m.gradingBasis === 'Completed Satisfactory/Unsatisfactory';
+      if (k === 'hoursBelow') return m.workloadHours !== null && m.workloadHours < Number(v);
+      if (k === 'prereq') return m.prereqNone || (SELECTED_PREREQ === 'ii' && m.prereqCohortOnly);
+      throw new Error(`unknown 3H param ${k}`);
+    });
+  };
   const fakes = createFakes();
   const ai = new SuiteAI();
   fakes.ai = /** @type {any} */ (ai);
@@ -193,8 +212,22 @@ describe.skipIf(!corpus || bundleKind !== 'pinned')('the SC4 suite over the pinn
       switch (item.rule) {
         case 'code-at-rank-1':
           expect(got[0]).toBe(p.code);
-          if (p.allSatisfy) throw new Error('allSatisfy needs 3H');
+          for (const code of p.allSatisfy ? shownOf(body) : []) expect(satisfies(code, p.allSatisfy), code).toBe(true);
           break;
+        case 'constraint': {
+          // Every returned result (A8), its 3F variants included, satisfies the param;
+          // the top 10 overlaps the reference searched with the explicit param.
+          expect(body.count).toBeGreaterThan(0);
+          for (const code of shownOf(body)) expect(satisfies(code, p.param), code).toBe(true);
+          const qs = new URLSearchParams(p.param).toString();
+          const ref = await search(p.reference, item.topK, `&${qs}`);
+          expect(ref.missing, 'reference texts with no committed embedding').toEqual([]);
+          const refTop = new Set(codesOf(ref.body).slice(0, 10));
+          const overlap = top10.filter((code) => refTop.has(code)).length;
+          console.info(`[SC4] ${item.id} constraint overlap@10 with ${JSON.stringify(p.reference)}&${qs}: ${overlap} (min ${p.minOverlap})`);
+          expect(overlap).toBeGreaterThanOrEqual(p.minOverlap);
+          break;
+        }
         case 'codes-at-ranks':
           expect(got.slice(0, p.codes.length)).toEqual(p.codes);
           break;

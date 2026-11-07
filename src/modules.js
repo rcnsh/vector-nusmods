@@ -12,9 +12,12 @@ import { D1_TIMEOUT_MS, withTimeout } from './upstream.js';
  *   semesters: string | null, workload: string | null, prerequisite: string | null,
  *   preclusion: string | null, acad_year: string, text_hash: string,
  *   ng: number, ng_semesters: string | null,
+ *   exam_semesters?: string | null, su?: number, grading_basis?: string | null, workload_hours?: number | null,
+ *   prereq_none?: number, prereq_cohort_only?: number,
  * }} ModuleRow
- * @typedef {Pick<ModuleRow, 'code' | 'title' | 'department' | 'faculty' | 'credits' | 'level' | 'semesters' | 'ng' | 'ng_semesters'>} ResultRow
- *   The columns a search result renders (rowToModule) and filters on (pin).
+ * @typedef {Pick<ModuleRow, 'code' | 'title' | 'department' | 'faculty' | 'credits' | 'level' | 'semesters' | 'ng' | 'ng_semesters'
+ *   | 'exam_semesters' | 'su' | 'grading_basis' | 'workload_hours' | 'prereq_none' | 'prereq_cohort_only'>} ResultRow
+ *   The columns a search result renders (rowToModule) and filters on (pin, dense rows, 3H).
  * @typedef {{ updatedAsAt: string | null, source: string | null, count: number }} NgList
  *   Provenance of data/ng-courses-*.json, written to meta('ng_list') by ingest.
  * @typedef {import('./timing.js').Trace} Trace
@@ -29,7 +32,8 @@ const MODULE_COLUMNS =
   'code, title, description, credits, department, faculty, level, semesters, workload, prerequisite, preclusion, acad_year, text_hash, ng, ng_semesters';
 
 // /search: only what rowToModule renders and the pin's filter check reads.
-export const RESULT_COLUMNS = 'code, title, department, faculty, credits, level, semesters, ng, ng_semesters';
+export const RESULT_COLUMNS = 'code, title, department, faculty, credits, level, semesters, ng, ng_semesters, '
+  + 'exam_semesters, su, grading_basis, workload_hours, prereq_none, prereq_cohort_only';
 
 /**
  * A read on the nearest replica, or the primary when replication is off.

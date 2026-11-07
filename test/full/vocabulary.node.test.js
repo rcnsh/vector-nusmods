@@ -11,6 +11,7 @@ import { build, pinnedVocabularyPath } from '../../scripts/build-vocabulary.mjs'
 import { MODULE_INFO_PATH, loadPinnedCorpus } from '../../scripts/pinned-corpus.mjs';
 import { queryTokens } from '../../src/fts-query.js';
 import { ftsTerm, porterStem } from '../../src/porter.js';
+import { correctQuery } from '../../src/typo.js';
 import { parseVocabulary, prefixMatches } from '../../src/vocabulary.js';
 import { ftsIndex, sqliteTerms, typoVariants } from '../sqlite-fts.node.mjs';
 
@@ -43,5 +44,19 @@ describe.skipIf(!available)('3C vocabulary over the pinned corpus', () => {
     const wrong = variants.filter((tok) => prefixMatches(v, tok) !== (fts.matches(`"${tok}"*`) > 0));
     fts.close();
     expect(wrong).toEqual([]);
+  });
+});
+
+// 3H's pass A reads the corrected text (prereg C2-4), so a phrase 3C corrected would never match.
+describe.skipIf(!available)('3H phrases survive 3C over the real corpora', () => {
+  it('3C corrects no word of any 3H phrase, on the pinned and the production vocabulary', async () => {
+    const phrases = JSON.parse(readFileSync(new URL('../../data/constraint-phrases.json', import.meta.url), 'utf8'));
+    const texts = [...phrases.exam, ...phrases.su, ...phrases.hoursBelow.map((/** @type {string} */ p) => p.replace('N', '12')), ...phrases.prereq];
+    const production = JSON.parse(readFileSync(new URL('../../data/vocabulary.json', import.meta.url), 'utf8'));
+    const pinned = JSON.parse(readFileSync(await pinnedVocabularyPath(), 'utf8'));
+    for (const file of [pinned, production]) {
+      const v = parseVocabulary(file);
+      for (const t of texts) expect(correctQuery(t, v).text, `${file.corpus}: ${t}`).toBe(t);
+    }
   });
 });

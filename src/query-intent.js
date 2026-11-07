@@ -10,7 +10,7 @@
 //   1. canonical q                                         canonicalQuery
 //   2. 3G's vocabulary test on the pre-correction tokens    seam: `tokens` exposed
 //   3. 3C's correction of df-0 letter-only tokens           src/typo.js correctQuery
-//   4. intent pass A: the 3H phrases, stripped before joins seam: no phrases
+//   4. intent pass A: the 3H phrases, stripped before joins src/intents.js passA
 //   5. code joins                                           joinCodes
 //   6. code resolution                                      resolve
 //   7. intent pass B: the GE phrases (here) and the 3D level phrases (seam)
@@ -19,6 +19,7 @@
 // token; the other keys stay null until 3D and 3H fill them. Steps 4–7 read
 // the corrected text; 3C's corrections are not echoed in `interpreted`.
 import { queryTokens } from './fts-query.js';
+import { INTENT, SU_BASIS, passA } from './intents.js';
 import { correctQuery } from './typo.js';
 import { dfOf, prefixMatches } from './vocabulary.js';
 
@@ -45,8 +46,10 @@ export const MAX_PINS = 3;
  *   pins: string[], ranges: CodeRange[] | null, codeList: CodeRange[] | null,
  *   level: LevelWindow | null, noMatch: NoMatch | null,
  *   tokens: string[], corrected: string | null, fts: import('./fts-query.js').FtsTerms,
- *   noSignal: boolean,
+ *   noSignal: boolean, constraints: IntentConstraints,
  * }} ParsedQuery
+ * @typedef {{ exam?: 0, su?: 1, hoursBelow?: number, prereq?: 'none' }} IntentConstraints
+ *   3H's intents as the explicit params they map to (plan 3H "Query side").
  *   - `kind` 'mask': a whole-query partial code, bare prefix, `XX N000` or GE
  *     phrase. The results are the members of `ranges` (∩ `level`, ∩ the
  *     filters), ordered by exact dense score, or by code without the dense half.
@@ -60,6 +63,9 @@ export const MAX_PINS = 3;
  *     canonical q with 3C's corrections (null when there are none), which
  *     3C-2 also embeds.
  *   - `tokens`: the pre-correction tokens, for 3G's vocabulary test.
+ *   - `constraints`: 3H's intents read by pass A, as their explicit params;
+ *     `dense` is the query with their phrases stripped under the `stripped`
+ *     variant (raw when that would leave nothing).
  *   - `noSignal`: 3G's vocabulary half (C-3, C2-10). A 'search' with no
  *     route, where no pre-correction token has df > 0 or, at 4+ letters, an
  *     FTS prefix match. /search adds the dense half (top cosine below τ).
@@ -68,8 +74,11 @@ export const MAX_PINS = 3;
  *   prefixes: Set<string>, catalogue: Set<string>, collision: Set<string>, stopwords: Set<string>,
  *   ge: GeTable, gePhrases: { re: RegExp, prefixes: string[] }[], isOffered: (code: string) => boolean,
  *   vocabulary: import('./vocabulary.js').Vocabulary | null,
+ *   constraintPhrases: import('./intents.js').ConstraintPhrase[] | null,
+ *   intentVariant: { prereq: 'i' | 'ii', dense: 'stripped' | 'raw' },
  * }} IntentContext Upper-case prefixes, codes and collision entries; lower-case stopwords;
- *   the corpus vocabulary 3C corrects against (null: no correction).
+ *   the corpus vocabulary 3C corrects against (null: no correction); 3H's
+ *   compiled phrases (null: pass A reads nothing) and its variant.
  */
 
 /**
@@ -121,10 +130,14 @@ const phraseRegex = (phrase) => new RegExp(
  *   prefixes: Iterable<string>, catalogueCodes: Iterable<string>, collision: Iterable<string>,
  *   ge: GeTable, stopwords: Iterable<string>, isOffered: (code: string) => boolean,
  *   vocabulary?: import('./vocabulary.js').Vocabulary | null,
+ *   constraintPhrases?: import('./intents.js').ConstraintPhrase[] | null,
+ *   intentVariant?: { prereq: 'i' | 'ii', dense: 'stripped' | 'raw' },
  * }} data
  * @returns {IntentContext}
  */
-export function buildIntentContext({ prefixes, catalogueCodes, collision, ge, stopwords, isOffered, vocabulary = null }) {
+export function buildIntentContext({
+  prefixes, catalogueCodes, collision, ge, stopwords, isOffered, vocabulary = null, constraintPhrases = null, intentVariant = INTENT,
+}) {
   return {
     prefixes: new Set(prefixes),
     catalogue: new Set(catalogueCodes),
@@ -137,6 +150,8 @@ export function buildIntentContext({ prefixes, catalogueCodes, collision, ge, st
     ],
     isOffered,
     vocabulary,
+    constraintPhrases,
+    intentVariant,
   };
 }
 
@@ -203,14 +218,6 @@ function joinCodes(words, ctx) {
   return out;
 }
 
-/**
- * Step 4, intent pass A: the 3H phrases (no exam, S/U, workload,
- * prerequisite), matched and stripped from the lexical query before any join.
- * A seam until 3H: it strips nothing and sets nothing.
- * @param {string} q
- * @returns {{ text: string }}
- */
-const intentPassA = (q) => ({ text: q });
 
 /**
  * Step 7's 3D half, the level phrases (beginner, graduate, level N, year N).
@@ -236,7 +243,7 @@ export function parseQuery(q, ctx, ignore = []) {
   /** @type {ParsedQuery} */
   const parsed = {
     q, lexical: q, dense: q, interpreted, kind: 'search', pins: [], ranges: null, codeList: null, level: null, noMatch: null,
-    tokens: [], corrected: null, fts: { prefixes: [], corrections: [] }, noSignal: false,
+    tokens: [], corrected: null, fts: { prefixes: [], corrections: [] }, noSignal: false, constraints: {},
   };
 
   // Step 2: 3G's vocabulary test (a seam) reads the pre-correction tokens.
@@ -246,8 +253,21 @@ export function parseQuery(q, ctx, ignore = []) {
   parsed.corrected = c.text === q ? null : c.text;
   parsed.fts = { prefixes: c.prefixes, corrections: c.corrections };
   parsed.lexical = c.text;
-  // Step 4: a seam (3H).
-  const rest = intentPassA(c.text).text;
+  // Step 4: 3H's phrases, read and stripped before any join.
+  const a = ctx.constraintPhrases ? passA(c.text, ctx.constraintPhrases, ignored) : null;
+  const rest = a ? a.text : c.text;
+  if (a && (a.exam || a.su || a.hoursBelow !== null || a.prereq)) {
+    if (a.exam) { interpreted.exam = 0; parsed.constraints.exam = 0; }
+    if (a.su) { interpreted.su = { value: 1, basis: [...SU_BASIS] }; parsed.constraints.su = 1; }
+    if (a.hoursBelow !== null) { interpreted.hoursBelow = a.hoursBelow; parsed.constraints.hoursBelow = a.hoursBelow; }
+    if (a.prereq) { interpreted.prereq = { value: 'none', semantics: ctx.intentVariant.prereq }; parsed.constraints.prereq = 'none'; }
+    if (ctx.intentVariant.dense === 'stripped') {
+      const phrases = /** @type {import('./intents.js').ConstraintPhrase[]} */ (ctx.constraintPhrases);
+      const dense = passA(q, phrases, ignored).text;
+      if (dense !== '') parsed.dense = dense;
+      if (parsed.corrected !== null && rest !== '') parsed.corrected = rest;
+    }
+  }
   // A word that is only punctuation (`?`, `&`) is no token: it neither makes a
   // query "longer" nor counts toward the collision guard's whole query.
   const words = rest.split(' ').filter((w) => core(w) !== '');

@@ -30,6 +30,7 @@
 //   24 f64  3H: workload hours a week, NaN = null (C-11)
 // A workstream that adds a field fills its slot and bumps BUNDLE_SCHEMA, so
 // an old reader refuses a new bundle.
+import { INTENT } from './intents.js';
 import { dataVersion, rowHash, sha256Hex } from './rowhash.js';
 
 export const BUNDLE_MAGIC = 'VNMVEC01';
@@ -54,7 +55,9 @@ const NULL_FACULTY = 0xffff;
  *   table: Uint8Array, view: DataView, vectors: Float32Array, facultyId: Map<string, number>,
  * }} Bundle
  * @typedef {import('./rowhash.js').RowFields} RowFields
- * @typedef {{ sem?: number, level?: number, credits?: number, faculty?: string, ng?: boolean }} FilterEcho
+ * @typedef {{ sem?: number, level?: number, credits?: number, faculty?: string, ng?: boolean,
+ *   exam?: 0, su?: 1, hoursBelow?: number, prereq?: 'none' }} FilterEcho
+ *   `exam`, `su`, `hoursBelow` and `prereq` are 3H's (explicit params or parsed from q).
  * @typedef {[string, string]} CodeRange a primary-key range [lo, hi) over codes (src/query-intent.js codeRange)
  * @typedef {FilterEcho & { ranges?: CodeRange[], levelWindow?: { min: number, max: number | null } }} Constraints
  *   The filters plus 3B's routes: `ranges`, the codes a mask admits (a partial
@@ -310,6 +313,21 @@ export function compileMask(b, echo) {
   if (echo.credits !== undefined) {
     const credits = echo.credits;
     tests.push((i) => view.getFloat64(i * ROW_STRIDE + 8, true) === credits);
+  }
+  // 3H (plan 3H "Query side"): no exam in the selected semester (any offered one
+  // without sem); su or CS/CU; workload under N (NULL excluded); prereq by the semantics in force.
+  if (echo.exam === 0) {
+    const bits = echo.sem !== undefined ? 1 << (echo.sem - 1) : 0xf;
+    tests.push((i) => (table[i * ROW_STRIDE + 20] & bits) === 0);
+  }
+  if (echo.su === 1) tests.push((i) => (table[i * ROW_STRIDE + 21] & 3) !== 0);
+  if (echo.hoursBelow !== undefined) {
+    const below = echo.hoursBelow;
+    tests.push((i) => view.getFloat64(i * ROW_STRIDE + 24, true) < below);
+  }
+  if (echo.prereq === 'none') {
+    const bits = INTENT.prereq === 'i' ? 1 : 3;
+    tests.push((i) => (table[i * ROW_STRIDE + 22] & bits) !== 0);
   }
   if (tests.length === 0) return null;
   return (i) => tests.every((t) => t(i));

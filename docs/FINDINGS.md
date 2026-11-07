@@ -38,7 +38,7 @@ another status, or a reproduced/fixed finding names evidence that does not exist
 | S4 | reproduced | tests, live |
 | S5 | fixed | tests, live |
 | S6 | reproduced | live, full-corpus test |
-| S7 | reproduced | tests |
+| S7 | fixed | tests |
 | S8 | fixed | tests, live |
 | P1 | reproduced | tests, live |
 | P2 | partially-reproduced | tests, live |
@@ -439,14 +439,14 @@ the recorded run shows 14/20. Same finding, slightly worse.
 
 ### S7 · Intent data downloaded but unused
 
-**Status:** reproduced
+**Status:** fixed
 
 **Claim:** Exam dates, workload, `attributes.su`, grading basis, prereqs and the GE pillar
 (from the code prefix) are downloaded but unused.
 
 **Evidence:**
-- test `[S7 fixed] 3H-0: the schema has exam, S/U, grading-basis, workload-hours and prerequisite columns`: migration 0007, filled by ingest (NORMALISER_VERSION 2); the filters themselves wait for 3H's query side
-- test `[S7 known-bug] /search accepts no workload, exam, S/U or prerequisite filter: they are ignored`
+- test `[S7 fixed] 3H-0: the schema has exam, S/U, grading-basis, workload-hours and prerequisite columns`: migration 0007, filled by ingest (NORMALISER_VERSION 2); the filters are 3H's query side
+- test `[S7 fixed] 3H: /search filters on no exam, S/U, workload and prerequisite, as params or phrases`: `exam=0`, `su=1`, `hoursBelow=N`, `prereq=none`, and their phrases (pass A)
 
 **Notes:** In the pinned `moduleInfo.json`, 1,633 offered modules carry
 `semesterData[].examDate`, 933 carry `attributes.su: true`, and every record has

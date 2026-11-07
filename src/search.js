@@ -16,6 +16,7 @@ import { groupKeyOf } from './groups.js';
 import { intentContext } from './intent-data.js';
 import { lexicalSearch, rangeMembers } from './lexical.js';
 import { RESULT_COLUMNS, d1Timed, readSession, rowToModule } from './modules.js';
+import { INTENT } from './intents.js';
 import { NO_SIGNAL_TAU } from './no-signal.js';
 import { canonicalQuery, parseIgnore, parseQuery } from './query-intent.js';
 import { EMBED_CORRECTED } from './typo.js';
@@ -27,7 +28,7 @@ import {
 /**
  * @typedef {import('./modules.js').ResultRow} ResultRow
  * @typedef {import('./timing.js').Trace} Trace
- * @typedef {{ sem?: number, level?: number, credits?: number, faculty?: string, ng?: boolean }} FilterEcho
+ * @typedef {import('./vector-bundle.js').FilterEcho} FilterEcho
  * @typedef {Record<string, string | number | boolean>} VectorFilter
  * @typedef {'hybrid' | 'vector' | 'lexical'} Mode
  * @typedef {{ q: string, echo: FilterEcho, filter: VectorFilter, mode: Mode, topK: number, ignore: string[] }} SearchQuery
@@ -143,6 +144,30 @@ function parseFilters(params) {
     filter.ng = true;
   }
 
+  // 3H's explicit params (plan 3H "Query side"). Vectorize metadata has no 3H
+  // field, so they never reach `filter`: the standby applies them after hydrate.
+  const exam = params.get('exam');
+  if (exam !== null && exam !== '') {
+    if (exam !== '0') errors.push('exam must be 0 (no final exam listed)');
+    else echo.exam = 0;
+  }
+  const su = params.get('su');
+  if (su !== null && su !== '') {
+    if (su !== '1') errors.push('su must be 1 (S/U-able or graded CS/CU)');
+    else echo.su = 1;
+  }
+  const hoursBelow = params.get('hoursBelow');
+  if (hoursBelow !== null && hoursBelow !== '') {
+    const n = Number(hoursBelow);
+    if (!/^[1-9][0-9]?$/.test(hoursBelow)) errors.push('hoursBelow must be an integer from 1 to 99');
+    else echo.hoursBelow = n;
+  }
+  const prereq = params.get('prereq');
+  if (prereq !== null && prereq !== '') {
+    if (prereq !== 'none') errors.push('prereq must be none');
+    else echo.prereq = 'none';
+  }
+
   return { echo, filter, errors };
 }
 
@@ -218,6 +243,10 @@ export function canonicalCacheKey(origin, { q, echo, mode, topK, ignore }, versi
   if (echo.credits !== undefined) pairs.push(['credits', String(echo.credits)]);
   if (echo.faculty !== undefined) pairs.push(['faculty', echo.faculty]);
   if (echo.ng === true) pairs.push(['ng', '1']);
+  if (echo.exam === 0) pairs.push(['exam', '0']);
+  if (echo.su === 1) pairs.push(['su', '1']);
+  if (echo.hoursBelow !== undefined) pairs.push(['hoursBelow', String(echo.hoursBelow)]);
+  if (echo.prereq === 'none') pairs.push(['prereq', 'none']);
   if (mode !== 'hybrid') pairs.push(['mode', mode]);
   if (topK !== DEFAULT_TOPK) pairs.push(['topK', String(topK)]);
   if (ignore.length) pairs.push(['ignore', ignore.join(',')]);
@@ -254,6 +283,14 @@ function localMatchesFilters(row, echo) {
     if (row.level === null || row.level < min || (max !== null && row.level > max)) return false;
   }
   if (echo.ranges && !echo.ranges.some(([lo, hi]) => row.code >= lo && row.code < hi)) return false;
+  // 3H, as lexical.js filterSql and the bundle mask state them.
+  if (echo.exam === 0) {
+    const exams = JSON.parse(row.exam_semesters ?? '[]');
+    if (echo.sem !== undefined ? exams.includes(echo.sem) : exams.length > 0) return false;
+  }
+  if (echo.su === 1 && row.su !== 1 && row.grading_basis !== 'Completed Satisfactory/Unsatisfactory') return false;
+  if (echo.hoursBelow !== undefined && !(row.workload_hours != null && row.workload_hours < echo.hoursBelow)) return false;
+  if (echo.prereq === 'none' && !(row.prereq_none === 1 || (INTENT.prereq === 'ii' && row.prereq_cohort_only === 1))) return false;
   return true;
 }
 
@@ -471,7 +508,8 @@ async function fetchRows(db, codes, trace) {
 
 
 /** The columns a variant needs: its code and credits, and the fields localMatchesFilters reads. */
-const VARIANT_COLUMNS = 'code, credits, level, faculty, semesters, ng, ng_semesters';
+const VARIANT_COLUMNS = 'code, credits, level, faculty, semesters, ng, ng_semesters, '
+  + 'exam_semesters, su, grading_basis, workload_hours, prereq_none, prereq_cohort_only';
 
 /**
  * 3G's τ: NO_SIGNAL_TAU, or the NO_SIGNAL_TAU var (tests only; production
@@ -630,9 +668,6 @@ async function runSearch({ q, echo, filter, mode, topK, ignore }, env, trace, lo
   // since deeper lists change RRF's sums. 100 is Vectorize's topK cap.
   const singleList = !parsed.codeList && (mode === 'lexical' || (mode === 'vector' && denseBackend(env) === 'bundle'));
   const depth = !collapsing ? Math.min(topK * CANDIDATE_MULTIPLIER, MAX_TOPK) : singleList ? MAX_TOPK * 2 : MAX_TOPK;
-  // 3F: variants pass the request's filters and the query's level window, but
-  // not its code ranges (a GES result may list its GESS cross-listing).
-  const variantFilter = parsed.level ? { ...echo, levelWindow: parsed.level } : echo;
 
   // Dense retrieval. In hybrid mode a failure degrades to keyword-only results
   // (B6); in vector mode it fails loudly, because the eval measures that half.
@@ -675,12 +710,21 @@ async function runSearch({ q, echo, filter, mode, topK, ignore }, env, trace, lo
     };
   };
 
+  // 3H: the parsed intents join the explicit params (the tighter hour limit holds).
+  /** @type {FilterEcho} */
+  const intentFilter = { ...echo, ...parsed.constraints };
+  if (echo.hoursBelow !== undefined && parsed.constraints.hoursBelow !== undefined) {
+    intentFilter.hoursBelow = Math.min(echo.hoursBelow, parsed.constraints.hoursBelow);
+  }
   /** @type {Constraints} */
   const constraints = {
-    ...echo,
+    ...intentFilter,
     ...(parsed.level ? { levelWindow: parsed.level } : {}),
     ...(parsed.ranges ? { ranges: parsed.ranges } : {}),
   };
+  // 3F: variants pass the request's filters, 3H's intents and the query's level
+  // window, but not its code ranges (a GES result may list its GESS cross-listing).
+  const variantFilter = parsed.level ? { ...intentFilter, levelWindow: parsed.level } : intentFilter;
 
   // ── no-match: `count: 0`; a not-offered code names its catalogue title and
   // the dense neighbours of its catalogue text, never in `results`.
@@ -815,7 +859,8 @@ async function runSearch({ q, echo, filter, mode, topK, ignore }, env, trace, lo
     const byCodeRow = new Map(res.results.map((r) => [r.code, r]));
     for (const code of parsed.pins) {
       const row = byCodeRow.get(code);
-      if (!row || !localMatchesFilters(row, echo)) continue;
+      // A pin passes the filters and 3H's intents (not 3B's ranges, which it routes around).
+      if (!row || !localMatchesFilters(row, intentFilter)) continue;
       if (collapsing) {
         const k = groupKeyOf(groupOf, code);
         if (groupsShown.has(k)) continue;

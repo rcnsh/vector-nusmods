@@ -18,7 +18,7 @@ export const INTENT_VARIANTS = Object.freeze({
 });
 
 /** The variant in force. */
-export const INTENT_VARIANT = 'ii-stripped';
+export const INTENT_VARIANT = 'i-stripped';
 
 /** The variant in force's settings. */
 export const INTENT = INTENT_VARIANTS[INTENT_VARIANT];

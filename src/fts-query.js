@@ -10,6 +10,29 @@ import { FTS_SEPARATORS } from './fts-separators.js';
 const STOPWORDS = new Set(['a', 'an', 'and', 'are', 'as', 'at', 'be', 'by', 'do', 'for', 'from',
   'how', 'i', 'in', 'is', 'it', 'me', 'my', 'of', 'on', 'or', 'own', 'the', 'to', 'with', 'you', 'your']);
 
+/** The list before Phase 3 (eval/prereg/stopwords.json `current`). */
+export const STOPWORDS_CURRENT = STOPWORDS;
+
+// Candidate `stopwords-v2` (docs/plans/phase3.md 3B "Keyword brittleness",
+// eval/prereg/stopwords.json): the list above plus words that name the
+// catalogue itself rather than a subject. Screened alone under the general CI
+// rule; it ships only if it passes dev alone.
+export const STOPWORDS_V2 = new Set([...STOPWORDS_CURRENT,
+  'class', 'course', 'courses', 'module', 'modules', 'nus', 'something', 'teach']);
+
+/** @typedef {'current' | 'v2'} StopwordVariant */
+export const STOPWORD_VARIANTS = Object.freeze({ current: STOPWORDS_CURRENT, v2: STOPWORDS_V2 });
+
+/**
+ * The stopword list in force. Each screened ranker differs from the next only
+ * here (tags `3b`, `3b-sw2`, `sw2`), so the ranker tree hash names the list the
+ * eval scored.
+ * @type {StopwordVariant}
+ */
+export const STOPWORDS_VARIANT = 'v2';
+
+export const STOPWORDS_IN_FORCE = STOPWORD_VARIANTS[STOPWORDS_VARIANT];
+
 /**
  * The query's tokens, split exactly where the modules_fts tokenizer
  * (`porter unicode61`, 0006) splits text: on the separator table generated
@@ -28,7 +51,7 @@ export function queryTokens(query) {
  * (canonical decomposition, marks removed), so "ánd" is "and".
  * @param {string} token
  */
-const isStopword = (token) => STOPWORDS.has(token.normalize('NFD').replace(/\p{M}+/gu, ''));
+const isStopword = (token) => STOPWORDS_IN_FORCE.has(token.normalize('NFD').replace(/\p{M}+/gu, ''));
 
 /** @param {string} query */
 function ftsTokens(query) {

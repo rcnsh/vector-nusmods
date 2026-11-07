@@ -9,13 +9,16 @@ import { DatabaseSync } from 'node:sqlite';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { probeSeparators, render } from '../scripts/gen-fts-separators.mjs';
-import { ftsMatch, queryTokens } from '../src/fts-query.js';
+import { STOPWORDS_IN_FORCE, ftsMatch, queryTokens } from '../src/fts-query.js';
 
 const read = (/** @type {string} */ p) => readFileSync(fileURLToPath(new URL(`../${p}`, import.meta.url)), 'utf8');
 
-/** The tokeniser before B8 was fixed, kept verbatim as the differential reference. */
-const STOPWORDS = new Set(['a', 'an', 'and', 'are', 'as', 'at', 'be', 'by', 'do', 'for', 'from',
-  'how', 'i', 'in', 'is', 'it', 'me', 'my', 'of', 'on', 'or', 'own', 'the', 'to', 'with', 'you', 'your']);
+/**
+ * The tokeniser before B8 was fixed, kept verbatim as the differential
+ * reference, over the stopword list in force (stopwords-v2 here), so the
+ * comparison stays about tokenising.
+ */
+const STOPWORDS = STOPWORDS_IN_FORCE;
 /** @param {string} query */
 function oldFtsMatch(query) {
   const all = query.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim().split(/\s+/).filter(Boolean);

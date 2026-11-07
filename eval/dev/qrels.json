@@ -1,7 +1,7 @@
 {
  "schema": "vnm-eval-qrels/1",
  "set": "dev",
- "version": "qrels-dev-v7",
+ "version": "qrels-dev-v8",
  "corpus": {
   "moduleInfoSha256": "2d138795d387d133237669a7f5a22c7c4d30b4a26bf82dad0a982636e80857b1",
   "ngSha256": "092d021db4ccff2ea45e75bfc073623fa502aace082a8d5bd627f41d79c3f169"
@@ -190,6 +190,34 @@
     }
    },
    "createdAt": "2026-11-07T13:17:34.592Z"
+  },
+  {
+   "round": "p3e",
+   "mode": "single",
+   "judges": {
+    "A": "claude-opus-5-5"
+   },
+   "adjudicator": null,
+   "pairs": 16,
+   "pool": "1282bcb68e4cb3a7717176bea9ebcab2a0f1b350500914bb6a166c3861767919",
+   "codeRule": {
+    "rule": "code-rule-v1",
+    "pairs": 56,
+    "queries": 0,
+    "added": {
+     "0": 0,
+     "1": 0,
+     "2": 0
+    },
+    "changed": {},
+    "overrides": {
+     "total": 0,
+     "up": 0,
+     "down": 0,
+     "same": 0
+    }
+   },
+   "createdAt": "2026-11-07T14:07:25.323Z"
   }
  ],
  "queries": {
@@ -592,6 +620,18 @@
        "slot": "A",
        "grade": 0,
        "rationale": "CE3155A is a civil engineering structural analysis course. It shares only the word 'behaviour' with the query and covers no marketing or consumer behaviour."
+      }
+     }
+    },
+    "NM2209": {
+     "grade": 1,
+     "source": "judged",
+     "round": "p3e",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 1,
+       "rationale": "A communications course applying social psychology to how new media is marketed, adopted and consumed and what goes through adopters' minds; it touches consumer behaviour but is not a business-school marketing course on consumer behaviour or brand management."
       }
      }
     }
@@ -1188,6 +1228,18 @@
        "slot": "A",
        "grade": 1,
        "rationale": "Advanced finance course on pricing and hedging derivatives and managing financial risk, offered to NG students in semester 1. It covers only the derivatives and risk management part, with no capital structure, dividends or M&A, which matches the partial line."
+      }
+     }
+    },
+    "IS4228": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3e",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "A FinTech and information technology course giving an overview of financial markets; it does not cover capital structure, dividend policy, derivatives or M&A as advanced corporate finance."
       }
      }
     }
@@ -10586,6 +10638,18 @@
        "rationale": "A piano repertoire analysis elective from the music conservatory; not an engineering course, which the intent names as not relevant."
       }
      }
+    },
+    "CE3121": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3e",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "Civil engineering topic-coverage course; the description shows no project-based or exam-free assessment, so it does not meet the no-final-exam project intent on the evidence shown."
+      }
+     }
     }
    }
   },
@@ -13176,6 +13240,18 @@
        "slot": "A",
        "grade": 2,
        "rationale": "A GE course, open to NG students, on Singapore's maritime history and the sea's influence on society and economy, a social science and culture topic."
+      }
+     }
+    },
+    "GEX1010": {
+     "grade": 2,
+     "source": "judged",
+     "round": "p3e",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 2,
+       "rationale": "GEX general education course using economic reasoning to explain social phenomena such as crime and failing states, a non-technical social science GE that is open to NG students."
       }
      }
     }
@@ -19294,6 +19370,18 @@
        "rationale": "Compiler design; not software engineering design patterns."
       }
      }
+    },
+    "ME3263": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3e",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "Product design for manufacture and assembly in mechanical engineering; product design is named as not relevant, and it shares only the word 'design' with the query."
+      }
+     }
     }
    }
   },
@@ -20548,6 +20636,18 @@
        "slot": "A",
        "grade": 0,
        "rationale": "Theory of computation (automata, languages, P vs NP). It covers neither concurrency nor parallel or operating systems topics."
+      }
+     }
+    },
+    "CS3234": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3e",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "Logic, proof assistants and Prolog; it does not cover threads, shared memory or message passing."
       }
      }
     }
@@ -22218,6 +22318,30 @@
        "rationale": "GEX1015 is a 1000-level general education philosophy course, open to NG students in both semesters; it is non-technical and argument-driven."
       }
      }
+    },
+    "GES1019": {
+     "grade": 2,
+     "source": "judged",
+     "round": "p3e",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 2,
+       "rationale": "A GE course (GES), non-technical, on Singapore's built environment, open to all undergraduates and NG in semester 1; it fits easily alongside CS."
+      }
+     }
+    },
+    "GEX1005": {
+     "grade": 2,
+     "source": "judged",
+     "round": "p3e",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 2,
+       "rationale": "A GE course (GEX) on public speaking and critical reasoning, non-technical and NG in semester 2; no semester is required here."
+      }
+     }
     }
    }
   },
@@ -22640,6 +22764,18 @@
        "slot": "A",
        "grade": 0,
        "rationale": "A GE course on Singapore's maritime history; technology is not its theme."
+      }
+     }
+    },
+    "GESS1001": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3e",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "A Sem 1 general education course, but on Singapore's urban landscape, globalisation and planning policy rather than how technology affects society, ethics or culture."
       }
      }
     }
@@ -27696,6 +27832,30 @@
        "rationale": "Atomic and molecular physics (laser spectroscopy, cooling, trapping), not molecular biology; shares only the word 'molecular'."
       }
      }
+    },
+    "HSI2003": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3e",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "2000-level interdisciplinary course on the history of ideas in molecular biology from DNA to gene therapy; below the third-year floor of the partial line and not an advanced molecular biology course."
+      }
+     }
+    },
+    "LSM3242": {
+     "grade": 1,
+     "source": "judged",
+     "round": "p3e",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 1,
+       "rationale": "3000-level microbiology course that reviews advances in genetics and molecular biology of industrial microbes as one part; third-year and molecular content make it partially relevant, not the 4000-level research-topics course."
+      }
+     }
     }
    }
   },
@@ -28524,6 +28684,18 @@
        "rationale": "A 5000-level public policy course on global health and development; not an introductory economics course."
       }
      }
+    },
+    "MA1301": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3e",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "Bridging mathematics course (algebra, calculus); shares only the word 'introductory' and is not economics."
+      }
+     }
     }
    }
   },
@@ -28912,6 +29084,18 @@
        "rationale": "A woodworking craft course for making furniture, not mechanical machine-element design or stress analysis."
       }
      }
+    },
+    "BN1112": {
+     "grade": 1,
+     "source": "judged",
+     "round": "p3e",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 1,
+       "rationale": "An engineering design course centred on engineering drawings, CAD 3D modelling and manufacturing, matching the intent's CAD line, but it does not cover machine elements like gears, bearings or shafts."
+      }
+     }
     }
    }
   },
@@ -29286,6 +29470,42 @@
        "slot": "A",
        "grade": 0,
        "rationale": "Introduction to political science; unrelated to accounting."
+      }
+     }
+    },
+    "FIN3701A": {
+     "grade": 1,
+     "source": "judged",
+     "round": "p3e",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 1,
+       "rationale": "Corporate finance course introducing fundamental concepts, so it matches the partially relevant intro-finance line rather than accounting; it is 3000-level and the fields do not show its prerequisites."
+      }
+     }
+    },
+    "FIN3702A": {
+     "grade": 1,
+     "source": "judged",
+     "round": "p3e",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 1,
+       "rationale": "Not accounting, but it calls itself an introductory investments course in finance, which fits the partially relevant intro-finance line; it is 3000-level and the fields do not show its prerequisites."
+      }
+     }
+    },
+    "FIN3702B": {
+     "grade": 1,
+     "source": "judged",
+     "round": "p3e",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 1,
+       "rationale": "Not accounting, but it calls itself an introductory investments course in finance, which fits the partially relevant intro-finance line; it is 3000-level and the fields do not show its prerequisites."
       }
      }
     }

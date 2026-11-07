@@ -2,7 +2,7 @@
  "schema": "vnm-eval-qrels/1",
  "set": "dev",
  "version": "qrels-diag-typo-v1",
- "derivedFrom": "qrels-dev-v7",
+ "derivedFrom": "qrels-dev-v8",
  "rule": "each variant has its source dev query's judgments, verbatim",
  "corpus": {
   "moduleInfoSha256": "2d138795d387d133237669a7f5a22c7c4d30b4a26bf82dad0a982636e80857b1",
@@ -412,6 +412,18 @@
        "rationale": "CE3155A is a civil engineering structural analysis course. It shares only the word 'behaviour' with the query and covers no marketing or consumer behaviour."
       }
      }
+    },
+    "NM2209": {
+     "grade": 1,
+     "source": "judged",
+     "round": "p3e",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 1,
+       "rationale": "A communications course applying social psychology to how new media is marketed, adopted and consumed and what goes through adopters' minds; it touches consumer behaviour but is not a business-school marketing course on consumer behaviour or brand management."
+      }
+     }
     }
    }
   },
@@ -690,6 +702,18 @@
        "slot": "A",
        "grade": 1,
        "rationale": "Advanced finance course on pricing and hedging derivatives and managing financial risk, offered to NG students in semester 1. It covers only the derivatives and risk management part, with no capital structure, dividends or M&A, which matches the partial line."
+      }
+     }
+    },
+    "IS4228": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3e",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "A FinTech and information technology course giving an overview of financial markets; it does not cover capital structure, dividend policy, derivatives or M&A as advanced corporate finance."
       }
      }
     }
@@ -9292,6 +9316,18 @@
        "rationale": "Compiler design; not software engineering design patterns."
       }
      }
+    },
+    "ME3263": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3e",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "Product design for manufacture and assembly in mechanical engineering; product design is named as not relevant, and it shares only the word 'design' with the query."
+      }
+     }
     }
    }
   },
@@ -10326,6 +10362,18 @@
        "slot": "A",
        "grade": 0,
        "rationale": "Theory of computation (automata, languages, P vs NP). It covers neither concurrency nor parallel or operating systems topics."
+      }
+     }
+    },
+    "CS3234": {
+     "grade": 0,
+     "source": "judged",
+     "round": "p3e",
+     "judges": {
+      "claude-opus-5-5": {
+       "slot": "A",
+       "grade": 0,
+       "rationale": "Logic, proof assistants and Prolog; it does not cover threads, shared memory or message passing."
       }
      }
     }

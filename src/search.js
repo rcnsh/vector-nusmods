@@ -617,6 +617,10 @@ async function parseWithCorpus(db, q, ignore, trace) {
 
 /** noMatch `related` holds this many dense neighbours of the catalogue text. */
 const RELATED_K = 5;
+/** 3H's request params (C-12): hard filters the standby's metadata cannot apply. */
+const INTENT_PARAMS = /** @type {const} */ (['exam', 'su', 'hoursBelow', 'prereq']);
+/** How deep the standby reads `related` under a 3H constraint: the dense path's cap. */
+const STANDBY_RELATED_DEPTH = 50;
 /** The catalogue text embedded for `related` is cut here (bge-small reads ~512 tokens anyway). */
 const RELATED_TEXT_CHARS = 2000;
 
@@ -746,9 +750,21 @@ async function runSearch({ q, echo, filter, mode, topK, ignore }, env, trace, lo
     let related = [];
     if (row && tryDense) {
       const text = catalogueText(row);
-      const hits = await settle(denseRun(env, [text], trace, (vs) => vectorSearch(env, vs, echo, filter, RELATED_K, trace)));
-      if (hits.ok) related = hits.value.slice(0, RELATED_K).map((h) => h.code);
+      // The standby's metadata has no 3H fields: it reads deeper, and its
+      // neighbours are checked after hydrate.
+      const standby = denseBackend(env) !== 'bundle';
+      const depth = standby && INTENT_PARAMS.some((k) => intentFilter[k] !== undefined) ? STANDBY_RELATED_DEPTH : RELATED_K;
+      const hits = await settle(denseRun(env, [text], trace, (vs) => vectorSearch(env, vs, intentFilter, filter, depth, trace)));
+      if (hits.ok) related = hits.value.map((h) => h.code);
       else degrade(/** @type {DenseFailure} */ (hits.error));
+      if (related.length && standby) {
+        const rows = await fetchRows(db, related, trace);
+        related = related.filter((c) => {
+          const r = rows.get(c);
+          return r !== undefined && localMatchesFilters(r, intentFilter);
+        });
+      }
+      related = related.slice(0, RELATED_K);
     }
     log.counts = { returned: 0, related: related.length };
     return respond([], { vector: related.length, lexical: 0, fused: 0 }, {

@@ -88,6 +88,33 @@ under (ii). Under (i) it exempts d-011 and d-099.
   - L7 runs the unchanged holdout rule;
   - the named retry is unchanged.
 
+## Review (fresh context, diff and goal only)
+Its checks pass:
+- `npm test` 1001/1001 and SC4 75/75;
+- a scratch sweep of every route, mode and backend: masks, pins, GE, phrase-only queries,
+  grouping on and off, the standby, and the explicit/parsed `hoursBelow` minimum;
+- the phrase list matches its mirror;
+- no phrase word is corrected on the production vocabulary;
+- `constraintExempt` on the real corpus agrees with this page;
+- the eval's dense texts equal the Worker's.
+
+It made three low-severity findings:
+1. **Fixed: a not-offered code's `related` neighbours ignored parsed intents, and the standby
+   ignored every 3H filter.**
+   - **Bundle:** it now filters on the combined intents.
+   - **Standby:** it reads 50 deep under a 3H constraint and checks each neighbour after
+     hydrate.
+   - **Test:** `search-constraints.test.js`. No result list changes, because `related` is not
+     in `results`.
+2. **Known: 3C's correction runs before pass A, so a corpus lacking a phrase word can correct it
+   away.** On the fixture vocabulary, `hours` becomes `tours`, so the `N hours` phrases don't
+   parse there. Every phrase word occurs in the pinned and production corpora, and a test holds
+   that none is corrected (3H-1). The order is pre-registered (parse step 4 after 3C).
+3. **Known: a misspelled phrase stays in the dense text under `stripped`.**
+   - **Example:** d-099 `intro accunting no prerqeuisites` parses the intent on the corrected
+     text. Its raw text holds no exact phrase to strip, so the raw query is embedded.
+   - **Effect:** the eval embeds the same texts, so the Worker and the eval agree.
+
 ## Next
 L7 on holdout: store the shipped `f004351` baseline and `ii-stripped`. Before that, the custodian
 embeds the holdout queries' stripped texts (`eval:embed --set holdout --corrected-from-ref`).

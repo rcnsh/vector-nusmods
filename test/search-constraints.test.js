@@ -7,7 +7,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { INTENT } from '../src/intents.js';
 import { searchCacheKey } from '../src/search.js';
-import { BASE, callJson, fixture, seed } from './helpers.js';
+import { BASE, adminCall, callJson, fixture, seed } from './helpers.js';
 
 const moduleOf = new Map(fixture.modules.map((m) => [m.code, m]));
 const CSCU = 'Completed Satisfactory/Unsatisfactory';
@@ -32,7 +32,14 @@ const PARAMS = ['exam=0', 'su=1', 'hoursBelow=10', 'prereq=none'];
 
 /** @type {import('./fakes.js').Fakes} */
 let fakes;
-beforeAll(async () => { fakes = await seed(); });
+beforeAll(async () => {
+  fakes = await seed();
+  // A not-offered code, whose `related` neighbours are dense hits too.
+  const res = await adminCall('/admin/catalogue', fakes, {
+    upsert: [{ code: 'GEQ1000', title: 'Asking Questions', description: 'How to ask good questions about the world.', acadYear: fixture.modules[0].acadYear }],
+  });
+  if (res.status !== 200) throw new Error(`catalogue seed: HTTP ${res.status}`);
+});
 
 describe('explicit params', () => {
   it('each is a hard filter in every mode and on the standby, and is echoed in `filters`', async () => {
@@ -104,6 +111,21 @@ describe('parsed from q', () => {
     expect(status).toBe(200);
     expect(body.count).toBeGreaterThan(0);
     for (const c of shown(body)) expect(moduleOf.get(c)?.examSemesters, c).toEqual([]);
+  });
+});
+
+describe('a not-offered code\'s related neighbours', () => {
+  it('hold every 3H constraint, explicit or parsed, on the bundle and on the standby', async () => {
+    for (const [q, param] of [['GEQ1000&exam=0', 'exam=0'], ['GEQ1000%20no%20exam', 'exam=0'], ['GEQ1000&su=1', 'su=1'],
+      ['GEQ1000%20light%20workload', 'hoursBelow=10'], ['GEQ1000&prereq=none', 'prereq=none']]) {
+      for (const env of [{}, { DENSE_BACKEND: 'vectorize' }]) {
+        const { body } = await callJson(`/search?q=${q}`, { fakes, env });
+        const where = `${q} ${env.DENSE_BACKEND ?? 'bundle'}`;
+        expect(body.noMatch?.reason, where).toBe('not-offered');
+        expect(body.noMatch.related.length, where).toBeGreaterThan(0);
+        for (const c of body.noMatch.related) expect(satisfies(/** @type {NormalisedModule} */ (moduleOf.get(c)), param), `${where} ${c}`).toBe(true);
+      }
+    }
   });
 });
 
